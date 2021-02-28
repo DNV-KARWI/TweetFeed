@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using TwitterFeed.Models;
+using static TwitterFeed.Controllers.ConnectionController;
 
 namespace TwitterFeed.Controllers
 {
@@ -18,9 +16,12 @@ namespace TwitterFeed.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            Connection connection = new Connection();
+            var feed = await connection.Connect();
+
+            return View(feed);
         }
 
         public IActionResult Privacy()
