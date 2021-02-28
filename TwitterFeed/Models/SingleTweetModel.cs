@@ -2,6 +2,20 @@
 using System.Collections.Generic;
 namespace TwitterFeed.Models
 {
+    public class Mention
+    {
+        public int start { get; set; }
+        public int end { get; set; }
+        public string username { get; set; }
+    }
+
+    public class Hashtag
+    {
+        public int start { get; set; }
+        public int end { get; set; }
+        public string tag { get; set; }
+    }
+
     public class Annotation
     {
         public int start { get; set; }
@@ -34,26 +48,33 @@ namespace TwitterFeed.Models
 
     public class Entities
     {
+        public List<Mention> mentions { get; set; }
+        public List<Hashtag> hashtags { get; set; }
         public List<Annotation> annotations { get; set; }
         public List<Url> urls { get; set; }
     }
 
-    public class Data
+    public class Attachments
     {
-        public string source { get; set; }
-        public DateTime created_at { get; set; }
-        public Entities entities { get; set; }
-        public bool possibly_sensitive { get; set; }
+        public List<string> media_keys { get; set; }
+    }
+
+    public class Datum
+    {
         public string author_id { get; set; }
         public string id { get; set; }
+        public DateTime created_at { get; set; }
+        public string conversation_id { get; set; }
+        public Entities entities { get; set; }
         public string text { get; set; }
-        public string lang { get; set; }
+        public Attachments attachments { get; set; }
     }
 
     public class Root
     {
-        public Data data { get; set; }
+        public List<Datum> data { get; set; }
     }
+
 
 
 }

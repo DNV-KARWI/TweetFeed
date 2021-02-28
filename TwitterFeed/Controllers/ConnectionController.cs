@@ -2,6 +2,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TwitterFeed.Models;
@@ -12,21 +13,70 @@ namespace TwitterFeed.Controllers
     {
         public class Connection
         {
-            public async Task<Root> Connect()
+            private string BaseUrl = "https://api.twitter.com/";
+            private string Baerer = "AAAAAAAAAAAAAAAAAAAAAKC7NAEAAAAAwAOe89ElGLyldSJS%2BCfBmj8EVXI%3DkI88UTu9tZokP6ZfZyTYMKa0F7X6QYbxkGHQVIpTBidamJ9vv5";
+            
+            public async Task<Models.Timeline.Root> GetTimelineTweets()
             {
                 using (var client = new HttpClient())
                 {
                     // Setting Base address.  
-                    client.BaseAddress = new Uri("https://api.twitter.com/");
+                    client.BaseAddress = new Uri(BaseUrl);
 
                     client.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Bearer", "AAAAAAAAAAAAAAAAAAAAAKC7NAEAAAAAwAOe89ElGLyldSJS%2BCfBmj8EVXI%3DkI88UTu9tZokP6ZfZyTYMKa0F7X6QYbxkGHQVIpTBidamJ9vv5");
+                        new AuthenticationHeaderValue("Bearer", Baerer);
 
                     // Initialization.  
-                    HttpResponseMessage response = new HttpResponseMessage();
+                    var response = new HttpResponseMessage();
 
                     // HTTP GET  
-                    response = await client.GetAsync("2/tweets/1275828087666679809?tweet.fields=attachments,author_id,created_at,entities,geo,id,in_reply_to_user_id,lang,possibly_sensitive,referenced_tweets,source,text,withheld").ConfigureAwait(false);
+                    response = await client.GetAsync("2/users/37676072/tweets").ConfigureAwait(false);
+
+                    // Verification  
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var twitt = await response.Content.ReadAsStringAsync();
+                        // Reading Response.  
+
+                        return JsonSerializer.Deserialize <Models.Timeline.Root> (twitt);
+                    }
+                }
+                return null;
+            }
+
+            public async Task<string> GetTtimelineTweetsIDs()
+            {
+                var root = await GetTimelineTweets();
+
+                var strBuilder = new StringBuilder();
+                foreach (var tweet in root.data)
+                {
+                    strBuilder.Append(tweet.id + ",");
+                }
+                var str = strBuilder.ToString();
+
+                return str.TrimEnd(',');
+            }
+
+            public async Task<Root> GetAllTweetsContent()
+            {
+                var tweetsIDs = await GetTtimelineTweetsIDs();
+
+                using (var client = new HttpClient())
+                {
+                    // Setting Base address.  
+                    client.BaseAddress = new Uri(BaseUrl);
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", Baerer);
+
+                    // Initialization.  
+                    var response = new HttpResponseMessage();
+
+                    // HTTP GET  
+                    response = await client.GetAsync("https://api.twitter.com/2/tweets?ids="
+                        + tweetsIDs
+                        + "&tweet.fields=author_id,entities,attachments,conversation_id,created_at").ConfigureAwait(false);
 
                     // Verification  
                     if (response.IsSuccessStatusCode)

@@ -3,6 +3,10 @@
 }
 @model TwitterFeed.Models.Root
 
+
 <div class="text-center">
-    <p>@Model.data.text</p>
+    @foreach (var item in Model.data)
+    {
+        <div>@item.text</div>
+    }
 </div>
