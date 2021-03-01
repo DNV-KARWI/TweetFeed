@@ -1,14 +1,61 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@model TwitterFeed.Models.Root
+@model TwitterFeed.ViewModels.TimelineViewModel
 
 
-<div class="text-center">
+<div class="layout">
+    <div class="layout__left-sidebar">
+    </div>
     <div class="layout__main">
-        @foreach (var item in Model.data)
+
+
+        @foreach (var item in Model.TweetViewModels)
         {
-            <div>@item.text</div>
+
+            <div class="tweet">
+                <div class="tweet_left">
+                    <img class="tweet__author-logo" src="@item.User.profile_image_url" />
+                </div>
+                <div class="tweet__main">
+                    <div class="tweet__header">
+                        <div class="tweet__author-name">
+                            @item.User.name
+                        </div>
+                        <span class="username">@@@item.User.username</span>
+                        <div class="tweet__author-slug">
+
+                        </div>
+                        <div>
+                            @if (DateTime.Now.Date.Day  - @item.UserTweet.created_at.Date.Day > 1)
+                            {
+                                <div class="tweet__publish-time">
+                                    DateTime.Now.Date.Hour - @item.UserTweet.created_at.Hour + h ago
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="tweet__publish-time">
+                                    @Convert.ToDateTime(@item.UserTweet.created_at.Date).ToString("M/dd")
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="tweet__content">
+                        @item.UserTweet.text
+                    </div>
+                    <div class="tweet__picture">
+                    </div>
+                </div>
+            </div>
+
+
+
         }
     </div>
-</div>
+
+        <div class="layout__right-sidebar-container">
+            <div class="layout__right-sidebar">
+            </div>
+        </div>
+    </div>

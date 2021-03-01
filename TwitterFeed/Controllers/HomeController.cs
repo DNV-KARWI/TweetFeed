@@ -18,9 +18,9 @@ namespace TwitterFeed.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Connection connection = new Connection();
+            var connection = new ConnectionController();
 
-            var ids = await connection.GetAllTweetsContent();
+            var ids = await connection.Connection();
 
             return View(ids);
         }
