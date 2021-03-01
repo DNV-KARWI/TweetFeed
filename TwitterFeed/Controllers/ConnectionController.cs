@@ -14,17 +14,18 @@ namespace TwitterFeed.Controllers
         public class Connection
         {
             private string BaseUrl = "https://api.twitter.com/";
-            private string Baerer = "AAAAAAAAAAAAAAAAAAAAAKC7NAEAAAAAwAOe89ElGLyldSJS%2BCfBmj8EVXI%3DkI88UTu9tZokP6ZfZyTYMKa0F7X6QYbxkGHQVIpTBidamJ9vv5";
+            private string Bearer = "AAAAAAAAAAAAAAAAAAAAAKC7NAEAAAAAwAOe89ElGLyldSJS%2BCfBmj8EVXI%3DkI88UTu9tZokP6ZfZyTYMKa0F7X6QYbxkGHQVIpTBidamJ9vv5";
             
             public async Task<Models.Timeline.Root> GetTimelineTweets()
             {
+                await GetUserInfo();
                 using (var client = new HttpClient())
                 {
                     // Setting Base address.  
                     client.BaseAddress = new Uri(BaseUrl);
 
                     client.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Bearer", Baerer);
+                        new AuthenticationHeaderValue("Bearer", Bearer);
 
                     // Initialization.  
                     var response = new HttpResponseMessage();
@@ -35,10 +36,38 @@ namespace TwitterFeed.Controllers
                     // Verification  
                     if (response.IsSuccessStatusCode)
                     {
-                        var twitt = await response.Content.ReadAsStringAsync();
+                        var tweets = await response.Content.ReadAsStringAsync();
                         // Reading Response.  
 
-                        return JsonSerializer.Deserialize <Models.Timeline.Root> (twitt);
+                        return JsonSerializer.Deserialize <Models.Timeline.Root> (tweets);
+                    }
+                }
+                return null;
+            }
+
+            public async Task<Models.User.Datum> GetUserInfo()
+            {
+                using (var client = new HttpClient())
+                {
+                    // Setting Base address.  
+                    client.BaseAddress = new Uri(BaseUrl);
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", Bearer);
+
+                    // Initialization.  
+                    var response = new HttpResponseMessage();
+
+                    // HTTP GET  
+                    response = await client.GetAsync("https://api.twitter.com/2/users?ids=37676072&user.fields=profile_image_url").ConfigureAwait(false);
+
+                    // Verification  
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var user = await response.Content.ReadAsStringAsync();
+                        // Reading Response.  
+
+                        return JsonSerializer.Deserialize<Models.User.Datum>(user);
                     }
                 }
                 return null;
@@ -68,7 +97,7 @@ namespace TwitterFeed.Controllers
                     client.BaseAddress = new Uri(BaseUrl);
 
                     client.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Bearer", Baerer);
+                        new AuthenticationHeaderValue("Bearer", Bearer);
 
                     // Initialization.  
                     var response = new HttpResponseMessage();
