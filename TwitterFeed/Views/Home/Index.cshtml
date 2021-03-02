@@ -9,10 +9,8 @@
     </div>
     <div class="layout__main">
 
-
         @foreach (var item in Model.TweetViewModels)
         {
-
             <div class="tweet">
                 <div class="tweet_left">
                     <img class="tweet__author-logo" src="@item.User.profile_image_url" />
@@ -27,35 +25,41 @@
 
                         </div>
                         <div>
-                            @if (DateTime.Now.Date.Day  - @item.UserTweet.created_at.Date.Day > 1)
+                            @if ((DateTime.Now - @item.UserTweet.created_at.Date).TotalHours <= 24)
                             {
                                 <div class="tweet__publish-time">
-                                    DateTime.Now.Date.Hour - @item.UserTweet.created_at.Hour + h ago
+                                    @Math.Round((DateTime.Now - @item.UserTweet.created_at.Date).TotalHours).ToString()h
                                 </div>
                             }
                             else
                             {
                                 <div class="tweet__publish-time">
-                                    @Convert.ToDateTime(@item.UserTweet.created_at.Date).ToString("M/dd")
+                                    @Convert.ToDateTime(@item.UserTweet.created_at.Date).ToString("M", new System.Globalization.CultureInfo("en-US"))
                                 </div>
                             }
                         </div>
                     </div>
                     <div class="tweet__content">
-                        @item.UserTweet.text
+                        @Html.Raw(@item.UserTweet.text)
                     </div>
-                    <div class="tweet__picture">
-                    </div>
+                    @if (@item.UserTweet.entities.urls != null)
+                    {
+                        @foreach (var url in @item.UserTweet.entities.urls)
+                        {
+                            @if (url.images != null)
+                            {
+                                <div class="tweet__picture">
+                                    <img class="tweet__image" src="@url.images[0].url" />
+                                </div>
+                            }
+                        }
+                    }
                 </div>
             </div>
-
-
-
         }
     </div>
-
-        <div class="layout__right-sidebar-container">
-            <div class="layout__right-sidebar">
-            </div>
+    <div class="layout__right-sidebar-container">
+        <div class="layout__right-sidebar">
         </div>
     </div>
+</div>
