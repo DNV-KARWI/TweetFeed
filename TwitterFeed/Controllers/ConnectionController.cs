@@ -24,6 +24,7 @@ namespace TwitterFeed.Controllers
 
             var extractLinksAndHashtagsfromText = new ExtractLinksAndHashtagsfromText();
             extractLinksAndHashtagsfromText.GetLinksFromText(tweetList);
+            extractLinksAndHashtagsfromText.GetHashtagsFromText(tweetList);
 
             var timelineViewModel = new TimelineViewModel();
             timelineViewModel.TweetViewModels = new List<TweetViewModel>();
