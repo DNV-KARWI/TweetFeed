@@ -9,7 +9,7 @@ namespace TwitterFeed.Controllers
 {
     public class ExtractLinksAndHashtagsfromText
     {
-        public Root GetLinksFromText(Root tweetList)
+        public void GetLinksFromText(Root tweetList)
         {
             foreach (var tweet in tweetList.data)
             {
@@ -21,7 +21,6 @@ namespace TwitterFeed.Controllers
                     }
                 }
             }
-            return tweetList;
         }
 
         public string ReplaceLinkWithTag(string inputText, Url urls)
@@ -31,7 +30,7 @@ namespace TwitterFeed.Controllers
             });
         }
 
-        public Root GetHashtagsFromText(Root tweetList)
+        public void GetHashtagsFromText(Root tweetList)
         {
             foreach (var tweet in tweetList.data)
             {
@@ -39,18 +38,31 @@ namespace TwitterFeed.Controllers
                 {
                     foreach (var hashtags in tweet.entities.hashtags)
                     {
-                        tweet.text = ReplaceHashstagWithTag(tweet.text, hashtags);
+                        tweet.text = ReplaceHashstagWithTag(tweet.text, "#", hashtags.tag);
                     }
                 }
             }
-            return tweetList;
         }
 
-        public string ReplaceHashstagWithTag(string inputText, Hashtag hashtags)
+        public void GetMentionsFromText(Root tweetList)
         {
-            var tag = string.Format("https://twitter.com/hashtag/{0}?src=hash", hashtags.tag);
-            return Regex.Replace(inputText, @"#" + hashtags.tag, delegate (Match m) {
-                return string.Format("<a href='{0}'><span>#</span><span >{1}</span></a>", tag, hashtags.tag);
+            foreach (var tweet in tweetList.data)
+            {
+                if (tweet.entities != null && tweet.entities.mentions != null)
+                {
+                    foreach (var mentions in tweet.entities.mentions)
+                    {
+                        tweet.text = ReplaceHashstagWithTag(tweet.text, "@", mentions.username);
+                    }
+                }
+            }
+        }
+
+        public string ReplaceHashstagWithTag(string inputText, string trailingMark, string replace)
+        {
+            var tag = string.Format("https://twitter.com/hashtag/{0}?src=hash", replace);
+            return Regex.Replace(inputText, @trailingMark + replace, delegate (Match m) {
+                return string.Format("<a href='{0}'><span>{1}</span><span >{2}</span></a>", tag, trailingMark, replace);
             });
         }
     }
