@@ -22,10 +22,8 @@ namespace TwitterFeed.Controllers
             var fetchTimelineTweets = GetTtimelineTweetsIDs(timelineTweets);
             var tweetList = await GetAllTweetsContent(fetchTimelineTweets);
 
-            var extractLinksAndHashtagsfromText = new ExtractLinksAndHashtagsfromText();
-            extractLinksAndHashtagsfromText.GetLinksFromText(tweetList);
-            extractLinksAndHashtagsfromText.GetHashtagsFromText(tweetList);
-            extractLinksAndHashtagsfromText.GetMentionsFromText(tweetList);
+            var extractTags = new ExtractLinksAndHashtagsfromText();
+            tweetList = extractTags.TweetList;
 
             var timelineViewModel = new TimelineViewModel();
             timelineViewModel.TweetViewModels = new List<TweetViewModel>();
