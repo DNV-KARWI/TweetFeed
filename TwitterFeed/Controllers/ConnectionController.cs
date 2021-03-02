@@ -22,7 +22,7 @@ namespace TwitterFeed.Controllers
             var fetchTimelineTweets = GetTtimelineTweetsIDs(timelineTweets);
             var tweetList = await GetAllTweetsContent(fetchTimelineTweets);
 
-            var extractTags = new ExtractLinksAndHashtagsfromText();
+            var extractTags = new ExtractLinksAndHashtagsfromText(tweetList);
             tweetList = extractTags.TweetList;
 
             var timelineViewModel = new TimelineViewModel();
