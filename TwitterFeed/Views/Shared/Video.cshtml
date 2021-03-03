@@ -5,17 +5,9 @@
 
 <html>
 <body>
-
-    <style type="text/css">
-        video {
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-        }
-    </style>
-        <video controls>
-            <source src="@Model.video_info.variants[1].url" preload="none" type="video/mp4" poster="@Model.media_url_https">
-            Your browser does not support video
-        </video>
+    <video controls class="tweet__video">
+        <source src="@Model.video_info.variants[1].url" preload="none" type="video/mp4" poster="@Model.media_url_https">
+        Your browser does not support video
+    </video>
 </body>
 </html>

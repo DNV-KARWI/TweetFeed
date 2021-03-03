@@ -4,7 +4,7 @@
 @model TwitterFeed.ViewModels.TimelineViewModel
 
 
-<div class="layout">
+<div class="layout d-flex justify-content-start">
     <div class="layout__left-sidebar">
     </div>
     <div class="layout__main">
@@ -24,7 +24,7 @@
                         <div class="tweet__author-slug">
 
                         </div>
-                        <div>
+                        <div class="tweet__publish-time">
                             @item.created_at
                         </div>
                     </div>

@@ -47,14 +47,17 @@ namespace TwitterFeed.Controllers
 
         private string ReplaceLinkWithTag(string inputText, Models.Tweet.Url urls)
         {
-            return Regex.Replace(inputText, urls.url, delegate (Match m)
-            {
-                if (urls.url != null)
+            var text = Regex.Replace(inputText,
+                @"((http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)",
+                delegate (Match m)
                 {
-                    return string.Format("<a target='_blank' href='{0}'>{1}</a>", urls.url, urls.expanded_url);
-                }
-                return null;
-            });
+                    if (urls.url == m.Value)
+                    {
+                        return string.Format("<a target='_blank' href='{0}'>{1}</a>", urls.url, urls.expanded_url);
+                    }
+                    return string.Empty;
+                });
+            return text;
         }
 
         private void GetHashtagsFromText(TimelineViewModel tweetList)
