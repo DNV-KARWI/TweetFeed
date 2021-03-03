@@ -23,9 +23,12 @@ namespace TwitterFeed.Controllers
             var fetchTimelineTweets = GetTtimelineTweetsIDs(timelineTweets);
             var tweetList = await GetAllTweetsContent(fetchTimelineTweets);
 
-            var tagsExtracetd = new ExtractLinksAndHashtagsfromText(tweetList);
+            var feed = new ExtractLinksAndHashtagsfromText(tweetList);
 
-            return tagsExtracetd.TweetList;
+            //ConvertDates convertDates = new ConvertDates(tweetList);
+            //convertDates.ConvertToTweeterCustomFormat();
+
+            return feed.TweetList;
         }
 
         public async Task<Models.Timeline.Root> GetTimelineTweets()

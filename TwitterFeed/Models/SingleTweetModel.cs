@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using TwitterFeed.Helpers;
 
 namespace TwitterFeed.Models.Tweet
 {
@@ -136,7 +139,15 @@ namespace TwitterFeed.Models.Tweet
         public int followers_count { get; set; }
         public int friends_count { get; set; }
         public int listed_count { get; set; }
-        public string created_at { get; set; }
+
+        public string created_at
+        {
+            set
+            {
+                Created_at = new ConvertDates().ConvertToTweeterCustomFormat(value);
+            }
+        }
+        public DateTime Created_at { get; set; }
         public int favourites_count { get; set; }
         public object utc_offset { get; set; }
         public object time_zone { get; set; }
@@ -170,7 +181,14 @@ namespace TwitterFeed.Models.Tweet
 
     public class Root
     {
-        public string created_at { get; set; }
+        public string created_at
+        {
+            set
+            {
+                Created_at = new ConvertDates().ConvertToTweeterCustomFormat(value);
+            }
+        }
+        public DateTime Created_at { get; set; }
         public long id { get; set; }
         public string id_str { get; set; }
         public string full_text { get; set; }

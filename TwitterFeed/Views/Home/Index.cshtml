@@ -25,7 +25,18 @@
 
                         </div>
                         <div class="tweet__publish-time">
-                            @item.created_at
+                            @if ((DateTime.Now - @item.Created_at).TotalHours <= 24)
+                            {
+                                <div class="tweet__publish-time">
+                                    @Math.Round((DateTime.Now - @item.Created_at).TotalHours).ToString()h
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="tweet__publish-time">
+                                    @Convert.ToDateTime(@item.Created_at).ToString("MMM d", new System.Globalization.CultureInfo("en-US"))
+                                </div>
+                            }
                         </div>
                     </div>
                     <div class="tweet__content">
