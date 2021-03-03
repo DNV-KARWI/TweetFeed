@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TwitterFeed.Models;
+using TwitterFeed.Models.Tweet;
 using TwitterFeed.ViewModels;
 
 namespace TwitterFeed.Controllers
@@ -22,26 +23,9 @@ namespace TwitterFeed.Controllers
             var fetchTimelineTweets = GetTtimelineTweetsIDs(timelineTweets);
             var tweetList = await GetAllTweetsContent(fetchTimelineTweets);
 
-            var extractTags = new ExtractLinksAndHashtagsfromText(tweetList);
-            tweetList = extractTags.TweetList;
+            var tagsExtracetd = new ExtractLinksAndHashtagsfromText(tweetList);
 
-            var timelineViewModel = new TimelineViewModel();
-            timelineViewModel.TweetViewModels = new List<TweetViewModel>();
-
-            foreach (var tweet in tweetList.data)
-            {
-                var fetchedUser = await GetUserInfo(tweet.author_id);
-                if (fetchedUser.data.Count > 0)
-                {
-                    TweetViewModel tweetViewModel = new TweetViewModel()
-                    {
-                        User = fetchedUser.data[0],
-                        UserTweet = tweet
-                    };
-                    timelineViewModel.TweetViewModels.Add(tweetViewModel);
-                }
-            }
-            return timelineViewModel;
+            return tagsExtracetd.TweetList;
         }
 
         public async Task<Models.Timeline.Root> GetTimelineTweets()
@@ -100,20 +84,31 @@ namespace TwitterFeed.Controllers
             return null;
         }
 
-        public string GetTtimelineTweetsIDs(Models.Timeline.Root root)
+        public List<string> GetTtimelineTweetsIDs(Models.Timeline.Root root)
         {
-            var strBuilder = new StringBuilder();
-            foreach (var tweet in root.data)
+            var tweetIds = new List<string>();
+            foreach (var tweetId in root.data)
             {
-                strBuilder.Append(tweet.id + ",");
+                tweetIds.Add(tweetId.id);
             }
-            var str = strBuilder.ToString();
-
-            return str.TrimEnd(',');
+            return tweetIds;
         }
 
-        public async Task<Root> GetAllTweetsContent(string tweetsIDs)
+        public async Task<TimelineViewModel> GetAllTweetsContent(List<string> tweetsIDs)
         {
+            TimelineViewModel timelineViewModel = new TimelineViewModel();
+            timelineViewModel.TweetViewModels = new List<Root>();
+            foreach (var tweetId in tweetsIDs)
+            {
+                var tweet = await GetSingleTweetContent(tweetId);
+
+                timelineViewModel.TweetViewModels.Add(tweet);
+            }
+            return timelineViewModel;
+        }
+
+        public async Task<Root>GetSingleTweetContent(string tweetId)
+        { 
             using (var client = new HttpClient())
             {
                 // Setting Base address.  
@@ -126,9 +121,7 @@ namespace TwitterFeed.Controllers
                 var response = new HttpResponseMessage();
 
                 // HTTP GET  
-                response = await client.GetAsync("https://api.twitter.com/2/tweets?ids="
-                    + tweetsIDs
-                    + "&tweet.fields=author_id,entities,attachments,conversation_id,created_at").ConfigureAwait(false);
+                response = await client.GetAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweetId + "&tweet_mode=extended").ConfigureAwait(false);
 
                 // Verification  
                 if (response.IsSuccessStatusCode)

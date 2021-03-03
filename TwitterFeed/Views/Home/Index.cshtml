@@ -13,44 +13,37 @@
         {
             <div class="tweet">
                 <div class="tweet_left">
-                    <img class="tweet__author-logo" src="@item.User.profile_image_url" />
+                    <img class="tweet__author-logo" src="@item.user.profile_image_url" />
                 </div>
                 <div class="tweet__main">
                     <div class="tweet__header">
                         <div class="tweet__author-name">
-                            @item.User.name
+                            @item.user.name
                         </div>
-                        <span class="username">@@@item.User.username</span>
+                        <span class="username">@@@item.user.screen_name</span>
                         <div class="tweet__author-slug">
 
                         </div>
                         <div>
-                            @if ((DateTime.Now - @item.UserTweet.created_at.Date).TotalHours <= 24)
-                            {
-                                <div class="tweet__publish-time">
-                                    @Math.Round((DateTime.Now - @item.UserTweet.created_at.Date).TotalHours).ToString()h
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="tweet__publish-time">
-                                    @Convert.ToDateTime(@item.UserTweet.created_at.Date).ToString("M", new System.Globalization.CultureInfo("en-US"))
-                                </div>
-                            }
+                            @item.created_at
                         </div>
                     </div>
                     <div class="tweet__content">
-                        @Html.Raw(@item.UserTweet.text)
+                        @Html.Raw(@item.full_text)
                     </div>
-                    @if (@item.UserTweet.entities.urls != null)
+                    @if (@item.extended_entities != null && @item.extended_entities.media != null)
                     {
-                        @foreach (var url in @item.UserTweet.entities.urls)
+                        @foreach (var media in @item.extended_entities.media)
                         {
-                            @if (url.images != null)
+                            @if (media.type == "photo")
                             {
-                                <div class="tweet__picture">
-                                    <img class="tweet__image" src="@url.images[0].url" />
+                                <div class="tweet__image">
+                                    <img class="tweet__image" src="@media.media_url_https" />
                                 </div>
+                            }
+                            @if (media.type == "video")
+                            {
+                                @await Html.PartialAsync("Video", @media);
                             }
                         }
                     }

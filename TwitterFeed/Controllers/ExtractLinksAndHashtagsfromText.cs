@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using TwitterFeed.Models;
+using TwitterFeed.ViewModels;
 
 namespace TwitterFeed.Controllers
 {
@@ -10,61 +11,76 @@ namespace TwitterFeed.Controllers
 
         }
 
-        public ExtractLinksAndHashtagsfromText(Root tweetList)
+        public ExtractLinksAndHashtagsfromText(TimelineViewModel tweetList)
         {
             GetLinksFromText(tweetList);
+            ReplaceLineBreak(tweetList);
             GetHashtagsFromText(tweetList);
             GetMentionsFromText(tweetList);
         }
 
-        public Root TweetList { get; private set; }
+        public TimelineViewModel TweetList { get; private set; }
 
-        private void GetLinksFromText(Root tweetList)
+        private void ReplaceLineBreak(TimelineViewModel tweetList)
         {
-            foreach (var tweet in tweetList.data)
+            foreach (var tweet in tweetList.TweetViewModels)
+            {
+                tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
+            }
+            TweetList = tweetList;
+        }
+
+        private void GetLinksFromText(TimelineViewModel tweetList)
+        {
+            foreach (var tweet in tweetList.TweetViewModels)
             {
                 if (tweet.entities != null && tweet.entities.urls!= null)
                 {
                     foreach (var urls in tweet.entities.urls)
                     {
-                        tweet.text = ReplaceLinkWithTag(tweet.text, urls);
+                        tweet.full_text = ReplaceLinkWithTag(tweet.full_text, urls);
                     }
                 }
             }
             TweetList = tweetList;
         }
 
-        private string ReplaceLinkWithTag(string inputText, Url urls)
+        private string ReplaceLinkWithTag(string inputText, Models.Tweet.Url urls)
         {
-            return Regex.Replace(inputText, urls.url, delegate (Match m) {
-                return string.Format("<a target='_blank' href='{0}'>{1}</a>", m.Value, urls.display_url);
+            return Regex.Replace(inputText, urls.url, delegate (Match m)
+            {
+                if (urls.url != null)
+                {
+                    return string.Format("<a target='_blank' href='{0}'>{1}</a>", urls.url, urls.expanded_url);
+                }
+                return null;
             });
         }
 
-        private void GetHashtagsFromText(Root tweetList)
+        private void GetHashtagsFromText(TimelineViewModel tweetList)
         {
-            foreach (var tweet in tweetList.data)
+            foreach (var tweet in tweetList.TweetViewModels)
             {
                 if (tweet.entities != null && tweet.entities.hashtags != null)
                 {
                     foreach (var hashtags in tweet.entities.hashtags)
                     {
-                        tweet.text = ReplaceHashstagWithTag(tweet.text, "#", hashtags.tag);
+                        tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "#", hashtags.text);
                     }
                 }
             }
             TweetList = tweetList;
         }
 
-        private void GetMentionsFromText(Root tweetList)
+        private void GetMentionsFromText(TimelineViewModel tweetList)
         {
-            foreach (var tweet in tweetList.data)
+            foreach (var tweet in tweetList.TweetViewModels)
             {
-                if (tweet.entities != null && tweet.entities.mentions != null)
+                if (tweet.entities != null && tweet.entities.user_mentions != null)
                 {
-                    foreach (var mentions in tweet.entities.mentions)
+                    foreach (var mention in tweet.entities.user_mentions)
                     {
-                        tweet.text = ReplaceHashstagWithTag(tweet.text, "@", mentions.username);
+                        tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "@", mention.screen_name);
                     }
                 }
             }
@@ -75,7 +91,7 @@ namespace TwitterFeed.Controllers
         {
             var tag = string.Format("https://twitter.com/hashtag/{0}?src=hash", replace);
             return Regex.Replace(inputText, @trailingMark + replace, delegate (Match m) {
-                return string.Format("<a href='{0}'><span>{1}</span><span >{2}</span></a>", tag, trailingMark, replace);
+                return string.Format("<a target='_blank' href='{0}'><span>{1}</span><span >{2}</span></a>", tag, trailingMark, replace);
             });
         }
     }

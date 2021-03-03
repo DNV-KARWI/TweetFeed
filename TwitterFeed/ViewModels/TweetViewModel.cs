@@ -1,17 +1,10 @@
 ﻿using System.Collections.Generic;
-using TwitterFeed.Models;
+using TwitterFeed.Models.Tweet;
 
 namespace TwitterFeed.ViewModels
 {
     public class TimelineViewModel
     {
-        public List<TweetViewModel> TweetViewModels { get; set; }
-    }
-
-    public class TweetViewModel
-    {
-        public Datum UserTweet { get; set; }
-
-        public Models.User.Datum User { get; set; }
+        public List<Root> TweetViewModels { get; set; }
     }
 }
