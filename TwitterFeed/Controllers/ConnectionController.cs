@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TwitterFeed.Models;
 using TwitterFeed.Models.Tweet;
 using TwitterFeed.ViewModels;
 
@@ -54,34 +52,6 @@ namespace TwitterFeed.Controllers
                     // Reading Response.  
 
                     return JsonSerializer.Deserialize<Models.Timeline.Root>(tweets);
-                }
-            }
-            return null;
-        }
-
-        public async Task<Models.User.Root> GetUserInfo(string author_id)
-        {
-            using (var client = new HttpClient())
-            {
-                // Setting Base address.  
-                client.BaseAddress = new Uri(BaseUrl);
-
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", Bearer);
-
-                // Initialization.  
-                var response = new HttpResponseMessage();
-
-                // HTTP GET  
-                response = await client.GetAsync("https://api.twitter.com/2/users?ids=" + author_id + "&user.fields=profile_image_url").ConfigureAwait(false);
-
-                // Verification  
-                if (response.IsSuccessStatusCode)
-                {
-                    var user = await response.Content.ReadAsStringAsync();
-                    // Reading Response.  
-                    var ser = JsonSerializer.Deserialize<Models.User.Root>(user);
-                    return JsonSerializer.Deserialize<Models.User.Root>(user);
                 }
             }
             return null;
