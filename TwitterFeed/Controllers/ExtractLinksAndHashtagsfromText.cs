@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using TwitterFeed.Models;
+using TwitterFeed.Models.Tweet;
 using TwitterFeed.ViewModels;
 
 namespace TwitterFeed.Controllers
@@ -13,46 +13,49 @@ namespace TwitterFeed.Controllers
 
         public ExtractLinksAndHashtagsfromText(TimelineViewModel tweetList)
         {
-            GetLinksFromText(tweetList);
-            ReplaceLineBreak(tweetList);
-            GetHashtagsFromText(tweetList);
-            GetMentionsFromText(tweetList);
+            foreach (var tweet in tweetList.TweetViewModels)
+            {
+                GetLinksFromText(tweet);
+                ReplaceLineBreak(tweet);
+                GetHashtagsFromText(tweet);
+                GetMentionsFromText(tweet);
+            }
+            TweetList = tweetList;
         }
 
         public TimelineViewModel TweetList { get; private set; }
 
-        private void ReplaceLineBreak(TimelineViewModel tweetList)
+        private void ReplaceLineBreak(Root tweet)
         {
-            foreach (var tweet in tweetList.TweetViewModels)
+            tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
+            if (tweet.retweeted_status != null)
             {
-                tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
-
-                if(tweet.retweeted_status != null)
-                {
-                    tweet.retweeted_status.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
-                }
+                tweet.retweeted_status.full_text = Regex.Replace(tweet.retweeted_status.full_text, "\n", "<br>");
             }
-            TweetList = tweetList;
         }
 
-        private void GetLinksFromText(TimelineViewModel tweetList)
+        private void GetLinksFromText(Root tweet)
         {
-            foreach (var tweet in tweetList.TweetViewModels)
+            if (tweet.retweeted_status == null)
             {
-                if (tweet.entities != null && tweet.entities.urls!= null)
+                if (tweet.entities != null && tweet.entities.urls != null)
                 {
                     foreach (var urls in tweet.entities.urls)
                     {
                         tweet.full_text = ReplaceLinkWithTag(tweet.full_text, urls);
-
-                        if (tweet.retweeted_status != null)
-                        {
-                            tweet.retweeted_status.full_text = ReplaceLinkWithTag(tweet.full_text, urls);
-                        }
                     }
                 }
             }
-            TweetList = tweetList;
+            else
+            {
+                if (tweet.retweeted_status.entities != null && tweet.retweeted_status.entities.urls != null)
+                {
+                    foreach (var urls in tweet.retweeted_status.entities.urls)
+                    {
+                        tweet.retweeted_status.full_text = ReplaceLinkWithTag(tweet.retweeted_status.full_text, urls);
+                    }
+                }
+            }
         }
 
         private string ReplaceLinkWithTag(string inputText, Models.Tweet.Url urls)
@@ -70,48 +73,62 @@ namespace TwitterFeed.Controllers
             return text;
         }
 
-        private void GetHashtagsFromText(TimelineViewModel tweetList)
+        private void GetHashtagsFromText(Root tweet)
         {
-            foreach (var tweet in tweetList.TweetViewModels)
+            if (tweet.retweeted_status == null)
             {
                 if (tweet.entities != null && tweet.entities.hashtags != null)
                 {
                     foreach (var hashtags in tweet.entities.hashtags)
                     {
                         tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "#", hashtags.text);
+                    }
+                }
+            }
+            else
+            {
+                if (tweet.retweeted_status.entities != null && tweet.retweeted_status.entities.hashtags != null)
+                {
+                    foreach (var hashtags in tweet.retweeted_status.entities.hashtags)
+                    {
                         if (tweet.retweeted_status != null)
                         {
-                            tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.full_text, "#", hashtags.text);
+                            tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.retweeted_status.full_text, "#", hashtags.text);
                         }
                     }
                 }
             }
-            TweetList = tweetList;
         }
 
-        private void GetMentionsFromText(TimelineViewModel tweetList)
+        private void GetMentionsFromText(Root tweet)
         {
-            foreach (var tweet in tweetList.TweetViewModels)
+            if (tweet.retweeted_status == null)
             {
                 if (tweet.entities != null && tweet.entities.user_mentions != null)
                 {
                     foreach (var mention in tweet.entities.user_mentions)
                     {
                         tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "@", mention.screen_name);
-                        if (tweet.retweeted_status != null)
-                        {
-                            tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.full_text, "@", mention.screen_name);
-                        }
                     }
                 }
             }
-            TweetList = tweetList;
+            else
+            {
+                if (tweet.retweeted_status.entities != null && tweet.retweeted_status.entities.user_mentions != null)
+                {
+                    foreach (var mention in tweet.retweeted_status.entities.user_mentions)
+                    {
+                        tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.retweeted_status.full_text, "@", mention.screen_name);
+                    }
+                }
+            }
         }
 
         private string ReplaceHashstagWithTag(string inputText, string trailingMark, string replace)
         {
             var tag = string.Format("https://twitter.com/hashtag/{0}?src=hash", replace);
-            return Regex.Replace(inputText, @trailingMark + replace, delegate (Match m) {
+            return Regex.Replace(inputText, @trailingMark + replace, delegate (Match m)
+            {
                 return string.Format("<a target='_blank' href='{0}'><span>{1}</span><span >{2}</span></a>", tag, trailingMark, replace);
             });
         }
