@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TwitterFeed.Models.Tweet.Root
+
+<div class="tweet">
+    <div class="tweet_left">
+        <img class="tweet__author-logo" src="@Model.user.profile_image_url" />
+    </div>
+    <div class="tweet__main">
+        <div class="tweet__header">
+            <div class="tweet__author-name">
+                @Model.user.name
+            </div>
+            <span class="username">@@@Model.user.screen_name</span>
+            <div class="tweet__author-slug">
+
+            </div>
+            <div class="tweet__publish-time">
+                @if ((DateTime.Now - @Model.Created_at).TotalHours <= 24)
+                {
+                    <div class="tweet__publish-time">
+                        @Math.Round((DateTime.Now - @Model.Created_at).TotalHours).ToString()h
+                    </div>
+                }
+                else
+                {
+                    <div class="tweet__publish-time">
+                        @Convert.ToDateTime(@Model.Created_at).ToString("MMM d", new System.Globalization.CultureInfo("en-US"))
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="tweet__content">
+            @Html.Raw(@Model.full_text)
+        </div>
+        @if (@Model.extended_entities != null && @Model.extended_entities.media != null)
+        {
+            @foreach (var media in @Model.extended_entities.media)
+            {
+                @if (media.type == "photo")
+                {
+                    <div class="tweet__image">
+                        <img class="tweet__image" src="@media.media_url_https" />
+                    </div>
+                }
+                @if (media.type == "video")
+                {
+                    @await Html.PartialAsync("Video", @media);
+                }
+            }
+        }
+    </div>
+</div>

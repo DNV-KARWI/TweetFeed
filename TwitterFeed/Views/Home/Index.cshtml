@@ -8,58 +8,16 @@
     <div class="layout__left-sidebar">
     </div>
     <div class="layout__main">
-
         @foreach (var item in Model.TweetViewModels)
         {
-            <div class="tweet">
-                <div class="tweet_left">
-                    <img class="tweet__author-logo" src="@item.user.profile_image_url" />
-                </div>
-                <div class="tweet__main">
-                    <div class="tweet__header">
-                        <div class="tweet__author-name">
-                            @item.user.name
-                        </div>
-                        <span class="username">@@@item.user.screen_name</span>
-                        <div class="tweet__author-slug">
-
-                        </div>
-                        <div class="tweet__publish-time">
-                            @if ((DateTime.Now - @item.Created_at).TotalHours <= 24)
-                            {
-                                <div class="tweet__publish-time">
-                                    @Math.Round((DateTime.Now - @item.Created_at).TotalHours).ToString()h
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="tweet__publish-time">
-                                    @Convert.ToDateTime(@item.Created_at).ToString("MMM d", new System.Globalization.CultureInfo("en-US"))
-                                </div>
-                            }
-                        </div>
-                    </div>
-                    <div class="tweet__content">
-                        @Html.Raw(@item.full_text)
-                    </div>
-                    @if (@item.extended_entities != null && @item.extended_entities.media != null)
-                    {
-                        @foreach (var media in @item.extended_entities.media)
-                        {
-                            @if (media.type == "photo")
-                            {
-                                <div class="tweet__image">
-                                    <img class="tweet__image" src="@media.media_url_https" />
-                                </div>
-                            }
-                            @if (media.type == "video")
-                            {
-                                @await Html.PartialAsync("Video", @media);
-                            }
-                        }
-                    }
-                </div>
-            </div>
+            if (item.retweeted_status == null)
+            {
+                @await Html.PartialAsync("Tweet", @item);
+            }
+            else
+            {
+                @await Html.PartialAsync("Tweet", @item.retweeted_status);
+            }
         }
     </div>
     <div class="layout__right-sidebar-container">

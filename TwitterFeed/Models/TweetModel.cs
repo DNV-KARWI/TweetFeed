@@ -245,7 +245,7 @@ namespace TwitterFeed.Models.Tweet
         public object coordinates { get; set; }
         public object place { get; set; }
         public object contributors { get; set; }
-        public RetweetedStatus retweeted_status { get; set; }
+        public Root retweeted_status { get; set; }
         public bool is_quote_status { get; set; }
         public int retweet_count { get; set; }
         public int favorite_count { get; set; }

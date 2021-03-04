@@ -26,6 +26,11 @@ namespace TwitterFeed.Controllers
             foreach (var tweet in tweetList.TweetViewModels)
             {
                 tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
+
+                if(tweet.retweeted_status != null)
+                {
+                    tweet.retweeted_status.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
+                }
             }
             TweetList = tweetList;
         }
@@ -39,6 +44,11 @@ namespace TwitterFeed.Controllers
                     foreach (var urls in tweet.entities.urls)
                     {
                         tweet.full_text = ReplaceLinkWithTag(tweet.full_text, urls);
+
+                        if (tweet.retweeted_status != null)
+                        {
+                            tweet.retweeted_status.full_text = ReplaceLinkWithTag(tweet.full_text, urls);
+                        }
                     }
                 }
             }
@@ -69,6 +79,10 @@ namespace TwitterFeed.Controllers
                     foreach (var hashtags in tweet.entities.hashtags)
                     {
                         tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "#", hashtags.text);
+                        if (tweet.retweeted_status != null)
+                        {
+                            tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.full_text, "#", hashtags.text);
+                        }
                     }
                 }
             }
@@ -84,6 +98,10 @@ namespace TwitterFeed.Controllers
                     foreach (var mention in tweet.entities.user_mentions)
                     {
                         tweet.full_text = ReplaceHashstagWithTag(tweet.full_text, "@", mention.screen_name);
+                        if (tweet.retweeted_status != null)
+                        {
+                            tweet.retweeted_status.full_text = ReplaceHashstagWithTag(tweet.full_text, "@", mention.screen_name);
+                        }
                     }
                 }
             }
