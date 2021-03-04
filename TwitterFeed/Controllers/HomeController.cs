@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using TwitterFeed.Models;
 using static TwitterFeed.Controllers.ConnectionController;

@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TwitterFeed.ViewModels.TimelineViewModel
+
+
+<div class="layout d-flex justify-content-start">
+    <div class="layout__left-sidebar">
+    </div>
+    <div class="layout__main">
+        <form asp-items="Index" asp-controller="Tweets" asp-for="hashtag">
+            <p>
+                Search by # <input type="text" name="hashtag" />
+                <input type="submit" value="Filter" />
+            </p>
+        </form>
+        @foreach (var item in Model.TweetViewModels)
+        {
+            if (item.retweeted_status == null)
+            {
+                @await Html.PartialAsync("Tweet", @item);
+            }
+            else
+            {
+                @await Html.PartialAsync("Tweet", @item.retweeted_status);
+            }
+        }
+    </div>
+    <div class="layout__right-sidebar-container">
+        <div class="layout__right-sidebar">
+        </div>
+    </div>
+</div>

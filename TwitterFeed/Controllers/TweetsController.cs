@@ -1,18 +1,16 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using TwitterFeed.ViewModels;
 
 namespace TwitterFeed.Controllers
 {
-    public class ExtractLinksAndHashtagsfromText
+    public class TweetsController: Controller
     {
-        public TimelineViewModel TweetList { get; private set; }
+        public static TimelineViewModel TweetList { get; private set; }
 
-        public ExtractLinksAndHashtagsfromText()
-        {
-
-        }
-
-        public ExtractLinksAndHashtagsfromText(TimelineViewModel tweetList)
+        public void Convert(TimelineViewModel tweetList)
         {
             foreach (var tweet in tweetList.TweetViewModels)
             {
@@ -22,6 +20,20 @@ namespace TwitterFeed.Controllers
                 GetMentionsFromText(tweet);
             }
             TweetList = tweetList;
+        }
+
+        public IActionResult Index(string hashtag)
+        {
+            if (!string.IsNullOrEmpty(hashtag))
+            {
+                var trimmed = hashtag.Trim('#');
+                var searchResult = TweetList.TweetViewModels.Where(s => s.entities.hashtags.Any(x => x.text.Contains(trimmed)));
+                var viewModel = new TimelineViewModel();
+                viewModel.TweetViewModels = new List<ViewModelRoot>();
+                viewModel.TweetViewModels.AddRange(searchResult);
+                return View("Tweets", viewModel);
+            }
+            return View("Tweets");
         }
 
         private void ReplaceLineBreak(ViewModelRoot tweet)

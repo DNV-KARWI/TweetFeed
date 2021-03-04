@@ -3,25 +3,4 @@
 }
 @model TwitterFeed.ViewModels.TimelineViewModel
 
-
-<div class="layout d-flex justify-content-start">
-    <div class="layout__left-sidebar">
-    </div>
-    <div class="layout__main">
-        @foreach (var item in Model.TweetViewModels)
-        {
-            if (item.retweeted_status == null)
-            {
-                @await Html.PartialAsync("Tweet", @item);
-            }
-            else
-            {
-                @await Html.PartialAsync("Tweet", @item.retweeted_status);
-            }
-        }
-    </div>
-    <div class="layout__right-sidebar-container">
-        <div class="layout__right-sidebar">
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("Tweets", Model) 
