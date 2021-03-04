@@ -69,13 +69,14 @@ namespace TwitterFeed.Controllers
 
         public async Task<TimelineViewModel> GetAllTweetsContent(List<string> tweetsIDs)
         {
-            TimelineViewModel timelineViewModel = new TimelineViewModel();
-            timelineViewModel.TweetViewModels = new List<Root>();
+            var timelineViewModel = new TimelineViewModel();
+            timelineViewModel.TweetViewModels = new List<ViewModelRoot>();
             foreach (var tweetId in tweetsIDs)
             {
                 var tweet = await GetSingleTweetContent(tweetId);
 
-                timelineViewModel.TweetViewModels.Add(tweet);
+                var viewModelRoot = new ViewModelRoot(tweet);
+                timelineViewModel.TweetViewModels.Add(viewModelRoot);
             }
             return timelineViewModel;
         }

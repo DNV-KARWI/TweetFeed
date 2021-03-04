@@ -165,3 +165,24 @@ body {
     font-family: inherit;
     overflow-wrap: break-word;
 }
+
+.tweet_top {
+    margin-bottom: 4px;
+    padding-top: 12px;
+    padding-left: 12px;
+}
+
+.tweet_top_retweet_btn {
+    display: flex;
+    min-width: 19px;
+    font-size: 15px;
+    fill: rgb(91, 112, 131);
+}
+
+.tweet_top_retweet_txt {
+    display: flex;
+    min-width: 150px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgb(91, 112, 131);
+}

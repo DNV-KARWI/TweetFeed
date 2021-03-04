@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
-using TwitterFeed.Models.Tweet;
 using TwitterFeed.ViewModels;
 
 namespace TwitterFeed.Controllers
 {
     public class ExtractLinksAndHashtagsfromText
     {
+        public TimelineViewModel TweetList { get; private set; }
+
         public ExtractLinksAndHashtagsfromText()
         {
 
@@ -23,9 +24,7 @@ namespace TwitterFeed.Controllers
             TweetList = tweetList;
         }
 
-        public TimelineViewModel TweetList { get; private set; }
-
-        private void ReplaceLineBreak(Root tweet)
+        private void ReplaceLineBreak(ViewModelRoot tweet)
         {
             tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
             if (tweet.retweeted_status != null)
@@ -34,7 +33,7 @@ namespace TwitterFeed.Controllers
             }
         }
 
-        private void GetLinksFromText(Root tweet)
+        private void GetLinksFromText(ViewModelRoot tweet)
         {
             if (tweet.retweeted_status == null)
             {
@@ -73,7 +72,7 @@ namespace TwitterFeed.Controllers
             return text;
         }
 
-        private void GetHashtagsFromText(Root tweet)
+        private void GetHashtagsFromText(ViewModelRoot tweet)
         {
             if (tweet.retweeted_status == null)
             {
@@ -100,7 +99,7 @@ namespace TwitterFeed.Controllers
             }
         }
 
-        private void GetMentionsFromText(Root tweet)
+        private void GetMentionsFromText(ViewModelRoot tweet)
         {
             if (tweet.retweeted_status == null)
             {
