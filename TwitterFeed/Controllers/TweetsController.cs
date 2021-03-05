@@ -33,15 +33,18 @@ namespace TwitterFeed.Controllers
                 viewModel.TweetViewModels.AddRange(searchResult);
                 return View("Tweets", viewModel);
             }
-            return View("Tweets");
+            return View("Tweets", TweetList);
         }
 
         private void ReplaceLineBreak(ViewModelRoot tweet)
         {
-            tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
-            if (tweet.retweeted_status != null)
+            if (tweet.full_text != null)
             {
-                tweet.retweeted_status.full_text = Regex.Replace(tweet.retweeted_status.full_text, "\n", "<br>");
+                tweet.full_text = Regex.Replace(tweet.full_text, "\n", "<br>");
+                if (tweet.retweeted_status != null)
+                {
+                    tweet.retweeted_status.full_text = Regex.Replace(tweet.retweeted_status.full_text, "\n", "<br>");
+                }
             }
         }
 

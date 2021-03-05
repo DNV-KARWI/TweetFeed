@@ -58,9 +58,12 @@ namespace TwitterFeed.Controllers
         public List<string> GetTtimelineTweetsIDs(Models.Timeline.Root root)
         {
             var tweetIds = new List<string>();
-            foreach (var tweetId in root.data)
+            if (root != null && root.data != null)
             {
-                tweetIds.Add(tweetId.id);
+                foreach (var tweetId in root.data)
+                {
+                    tweetIds.Add(tweetId.id);
+                }
             }
             return tweetIds;
         }
